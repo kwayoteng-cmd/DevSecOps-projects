@@ -1,1 +1,28 @@
+name: Secure CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker image
+      run: docker build -t secure-app .
+
+    - name: Scan image with Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: secure-app
+        severity: CRITICAL,HIGH
+        exit-code: 1
 
